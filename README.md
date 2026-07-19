@@ -130,7 +130,7 @@ d3.select('button#btn').on('click', showData)
 ```
 
 We can further split the animations into three steps: 
-1. Animate the width and height to show the squares
+1. Animate the radius to show the circles
 2. Show the happiness level of the first person
 3. Show the hapiness level of the second person
 
