@@ -1,6 +1,6 @@
 # Four ways of animating an SVG
 
-Let's make the SVG graphic we created during the [last class](https://github.com/zhoyoyo/lede-svg-with-d3) _move_.
+Let's make the circles we learned to create during the [last class](https://github.com/zhoyoyo/lede-svg-with-d3) _move_.
 
 We will do three things with four examples:
 
@@ -30,14 +30,14 @@ We can animate the graphic without touching Javascript by adding this to the `cu
 
 
 ```
-svg rect {
-    animation-name: easeIn;
+svg circle {
+    animation-name: appear;
     animation-duration: 5s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
 }
 
-@keyframes easeIn {
+@keyframes appear {
     from {
         fill-opacity: 0;
     }
@@ -54,18 +54,18 @@ We can animate certain attributes of an SVG graphic with CSS animation, but it d
 
 [d3-traisition](https://github.com/d3/d3-transition) gives us better control of animating from state to state for targeted DOM elements. 
 
-For example, the colors of the squares in our example are connected to the `Happiness` level from the data. If we want to animate their colors specific to the underlying data, we can do that with `d3-transition`. 
+For example, the colors of the circles in our example are connected to the `Happiness` level from the data. If we want to animate their colors specific to the underlying data, we can do that with `d3-transition`. 
 
-Let's say we want all the squares to start from the same grey colors and then transition to data-specific Hapiness levels. We can achieve that by assigning the fill color to the squares by twice, with a [d3-traisition](https://github.com/d3/d3-transition) function in between. 
+Let's say we want all the circles to start from the same grey colors and then transition to data-specific Happiness levels. We can achieve that by assigning an original fill color and a target fill color, with a [d3-traisition](https://github.com/d3/d3-transition) function in between. 
 
 Add the following Javascript code after you set the x, y, width, and height attributes of the `individualCharts` variable:
 
 
 ```
-// start with grey squares, change the "fill" value
+// start with grey, change the "fill" value
 individualCharts.style('fill','lightgrey')
 
-const showSquareData = function(){
+const showData = function(){
     
     individualCharts
         .transition().duration(2000)
@@ -74,22 +74,22 @@ const showSquareData = function(){
             else if (d.Happiness == '2') {return 'grey'}
             else {return 'gold'}
         })
-        .on('end', hideSquareData)
+        .on('end', hideData)
 
 }
 
-const hideSquareData = function(){
+const hideData = function(){
 
     individualCharts
         .transition()
         .duration(2000)
         .style('fill','lightgrey')
-        .on('end', showSquareData)
+        .on('end', showData)
 
 }
 
 // run the animation.
-showSquareData();
+showData();
 
 ```
 
@@ -98,20 +98,20 @@ Don't forget to delete or comment out the CSS animation you created before. Othe
 ##### 💦 Exercise Interlude 1 💦 
 *Animate attributes of an SVG that are not accessible in CSS* 
 
-What if we want to animate the width and height of an SVG rectangle? Take 5 minutes to see if you can figure it out yourself. 
+What if we want to animate the radius of an SVG circle (or the width and height of an SVG rectangle)? Take 5 minutes to see if you can figure it out yourself. 
 
 ##### 💦 Exercise Interlude 2 💦 
 *Can we update the shapes to display new data values?* 
 
-There is a column in the dataset (`Happiness_P2`) that shows the happiness level of a second person. How can we update the circle colors to make them represent that new person's happiness levels? 
+There is a column in the dataset (`Happiness_P2`) that shows the happiness level of a second person. How can we update the circle colors to make them represent the new person's happiness levels? 
 
 ##### 🔥 Make animation fancier 🔥 
 
-A sequenced animation sets up expectation and is often more ituitive in telling the story. 
+A sequenced animation sets up expectation and is often more intuitive in telling the story. 
 
 _Read: [12 principles of animation](https://www.gamedeveloper.com/blogs/12-principles-for-game-animation)_
 
-How to achieve it: Use the data index to set up a transition `delay`.
+How to achieve it: Use the data index `i` to set up a transition `delay`.
 
 ## Method 3: Animation triggered by a button click
 
@@ -120,13 +120,13 @@ In the `<body>` of the HTML, let's create a button above our SVG chart:
 ```
 <button id="btn">Animate!</button>
 ```
-Next, we need to bind the function that starts the animation to the button in Javascript. You can achieve this in either D3 or raw Javascript. Add this after your `hideSquareData()`function declaration, and comment out your call `showSquareData()`: 
+Next, we need to bind the function that starts the animation to the button in Javascript. You can achieve this either with D3 or with raw Javascript. (We will use D3.) Add the following block of code after your `hideData()` function declaration, and comment out your call `showData()`: 
 
 ```
-// showSquareData();
+// showData();
 
 // Create the Click event with D3: 
-d3.select('button#btn').on('click', showSquareData)
+d3.select('button#btn').on('click', showData)
 ```
 
 We can further split the animations into three steps: 
@@ -149,13 +149,13 @@ We can achieve this by replacing the current button with three buttons below the
 And adding the two functions and binding them to the buttons inside Javascript:
 
 ```
-const showSquares = function() {
+const showCircles = function() {
 
     individualCharts
+        .attr('r', 0)
         .transition()
         .duration(2000)
-        .attr('width', gridSize)
-        .attr('height', gridSize)
+        .attr('r', gridSize/2)
 }
 
 const showEmotions = function(personID) {
@@ -169,7 +169,7 @@ const showEmotions = function(personID) {
         })
 }
 
-d3.select('button#btn1').on('click', showSquares)
+d3.select('button#btn1').on('click', showCircles)
 
 d3.select('button#btn2').on('click', function(){
     showEmotions('Happiness')
@@ -183,7 +183,7 @@ d3.select('button#btn3').on('click', function(){
 
 🤔 Graphic changes are subtle to readers. It's common practice to enhance it with a clear text indication. We can do that inside `click` event callback functions by adding a line. 
 
-Add this to the end of the `ShowSquares` function:
+Add this to the end of the `showCircles` function:
 
 ```
 d3.select("p").html("Here are the 100 days.")
@@ -193,7 +193,7 @@ d3.select("p").html("Here are the 100 days.")
 Add this to the end of the `showEmotions` function:
 
 ```
-d3.select("p").html(function(personID){
+d3.select("p").html(function(){
     if (personID == "Happiness") {return "This is the emotional ups and downs of Person 1"}
     else {return "This is the emotional ups and downs of Person 2"}
 })
@@ -229,7 +229,7 @@ Next we need to set up the Javascript portion of Scrollama. Let's load the scrip
 <script src="https://unpkg.com/scrollama"></script>
 ```
 
-Then, we copy and paste the Javascript code section from the example and modify it to our use. You can copy and paste this section and put it below the d3 code (inside the `.then()` function) in our script: 
+Then, we copy and paste the Javascript code section from the example and modify it to our use. You can copy and paste this section and put it below the d3 code in our script: 
 
 ```
 // ======================================
@@ -273,7 +273,7 @@ function handleStepEnter(response) {
     // update graphic based on step
     if (response.index == 0) {
         // 1. Make the charts appear
-        showSquares()
+        showCircles()
     } else if (response.index == 1) {
         // 2. Show Person 1 emotions
         showEmotions('Happiness')
@@ -347,14 +347,6 @@ Lastly, copy the example's CSS in the style section to `custom.css`:
 
 Now you have a graphic that animates by scrolling the page.
 
-##### 💦 Exercise Interlude 1 💦 
+##### 💦 Exercise Interlude 💦 
 *Make the graphic responsive to window resizing*
-Update the x, y, width and height attributes of the squares inside the `handleResize` function.
-
-##### 💦 Exercise Interlude 2 💦 
-*Create a photo scroll* 
-
-Use the template in the folder `/scrollama-sticky-example` to create a photo gallery. Remember to change three places:
-- HTML: add photos to your `figure` container
-- CSS: make sure the visual is positioned correctly
-- Javascript: Add hooks to make the visual appear inside `handleStepEnter()`
+Update the x, y, and r attributes of the circles inside the `handleResize` function.

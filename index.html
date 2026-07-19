@@ -17,50 +17,67 @@
     <link rel="stylesheet" href="custom.css">
 
     <!-- add your d3 script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <!-- add Scrollama -->
     <script src="https://unpkg.com/scrollama"></script>
 
     <!-- your JS code that uses d3 to manipulate data -->
-    <script>
 
-      // Step 4. load your data with d3.csv()
-      d3.csv("happiness-sample-data.csv")
-      // d3.json("happiness-sample-data.json")
-        .then(data => {
+    <!-- 
+      Special instructions for loading external data:  
+      1) add the type="module" attribute to your script tag
+      2) use the await keyword to load your data with d3.csv(), so the data is loaded asynchronously. 
+    -->
 
-          const myChart = d3
-            .select('#my-svg-chart')
-            .append('svg')
-            .attr('width', 640)
-            .attr('height', 640)
+    <script type="module">
 
-          const individualCharts = myChart
-            .selectAll('rect')
-            .data(data)
-            .join('rect');
+      // load the data
+      const data = await d3.csv('happiness-sample-data.csv'); 
 
-          const gridSize = 20, gap = 2;
+      // using d3 time parsers to get the week and weekday of each date in the data
+      const stringToTime = d3.utcParse('%m/%d/%Y');
+      const getWeek = d3.utcFormat("%V");
+      const getWeekDay = d3.utcFormat("%u");
+      const getMonth = d3.utcFormat("%m");
 
-          individualCharts
-            .attr('x', (d,i) => {
-              return Math.floor(i%10)*(gridSize+ gap);
-            })
-            .attr('y', (d,i) => {
-              return Math.floor(i/10)*(gridSize+ gap);
-            })
-            .attr('width', gridSize)
-            .attr('height', gridSize)
-          
-          individualCharts
-            .style('fill', d=> {
-                if (d.Happiness == '1') {return 'black'}
-                else if (d.Happiness == '2') {return 'grey'}
-                else {return 'gold'}
-              })
-          
+      // create the SVG element and set its width and height
+      const myChart = d3
+        .select('#my-svg-chart')
+        .append('svg')
+        .attr('width', 640)
+        .attr('height', 640)
 
+      // create a circle for each data point
+      const individualCharts = myChart
+        .selectAll('circle')
+        .data(data)
+        .join('circle');
+
+      // set the position and radius of each circle
+
+      const gridSize = 20, gap = 2;
+
+      individualCharts
+        .attr('cx', (d,i) => {
+          return getWeekDay(stringToTime(d.Date)) * (gridSize + gap) + gridSize/2;
         })
+        .attr('cy', (d,i) => {
+          return getWeek(stringToTime(d.Date)) * (gridSize + gap) 
+            + gridSize/2 + (getMonth(stringToTime(d.Date)) - 1) * gridSize*2;
+        })
+        .attr('r', gridSize/2)
+
+      
+      // set the color of each circle based on the data value
+
+      individualCharts
+        .style('fill', d=> {
+            if (d.Happiness == '1') {return 'black'}
+            else if (d.Happiness == '2') {return 'grey'}
+            else {return 'gold'}
+          })
+      
+
 
     </script>
 

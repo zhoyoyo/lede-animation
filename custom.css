@@ -16,46 +16,6 @@ button {
     display: inline-block;
 }
 
-/* 
-svg rect {
-    animation-name: easeIn;
-    animation-duration: 4s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out; 
-
-    animation: bounce-in 4s ease infinite;
- */
-/* } */
-
-@keyframes easeIn {
-    from {
-        fill-opacity: 0;
-        stroke:black;
-    }
-
-    to {
-        fill-opacity: 1;
-        stroke:black;
-    }
-}
-
-
-.bounce-in {
-  animation: bounce-in 2s ease infinite;
-}
-
-@keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(.3);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  70% { transform: scale(.9); }
-  100% { transform: scale(1); }
-}
 
 
 
